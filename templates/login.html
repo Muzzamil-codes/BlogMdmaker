@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block start %}
+
+
+    <section class="home" id="home">
+      <div class="home-text container">
+          <h2 class="home-title">Login<span>Page</span></h2>
+      </div>    
+    </section> 
+    
+    <div class="header-content post-container">
+      <div class="relative mb-4">
+        <label for="full-name" class="leading-7 text-sm text-gray-600">User Name</label>
+        <input type="text" id="Username" name="full-name" class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+      </div>
+      <div class="relative mb-4">
+        <label for="email" class="leading-7 text-sm text-gray-600">Password</label>
+        <input type="password" id="Password" name="username" class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+      </div>
+    <button class="btn btn-lg btn-block btn-primary" onclick="login()">Log in</button>
+    </div>
+
+{% endblock %}
