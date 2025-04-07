@@ -18,7 +18,7 @@ class BlogModel(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True)
     description = models.TextField(default="No Description")
-    image = models.ImageField(upload_to='content/images/')
+    image = models.ImageField(upload_to='exampleSite/static/example')
     caption = models.CharField(max_length=255, blank=True, null=True)
     categories = models.JSONField(default=list)  # For simplicity, storing as JSON
     tags = models.JSONField(default=list)
@@ -34,21 +34,20 @@ class BlogModel(models.Model):
             print(self.file_directory)
             os.remove(self.file_directory.strip())
             self.slug = generate_slug(self.title)
-            self.file_directory = os.path.join(os.path.join('content', 'posts', str(datetime.now().year)), f"{self.slug}.md")
+            self.file_directory = os.path.join('exampleSite', 'content', 'en','example1')
             super().save(*args, **kwargs)
             self.save_markdown()
         else:
             
             self.slug = generate_slug(self.title)
-            self.file_directory = os.path.join(os.path.join('content', 'posts', str(datetime.now().year)), f"{self.slug}.md")
+            self.file_directory = os.path.join('exampleSite', 'content', 'en','example1')
             
             super().save(*args, **kwargs)
             self.save_markdown()
 
     def save_markdown(self):
         # Get the year folder path
-        year_folder = os.path.join('content', 'posts', str(datetime.now().year))
-        os.makedirs(year_folder, exist_ok=True)
+        folder = os.path.join('exampleSite', 'content', 'en','example1')
 
         # Convert content to markdown
         converter = html2text.HTML2Text()
@@ -59,32 +58,29 @@ class BlogModel(models.Model):
         markdown_content = markdown_content.replace('src="', 'src="/images/')
 
         # Build the markdown frontmatter
-        frontmatter = f"""---
-title: "{self.title}"
-date: {datetime.now().isoformat()}
-slug: /{self.slug}/
-description: {self.description}
-image: images/{os.path.basename(self.image.name)}
-caption: {self.caption or ''}
-categories:
-    - {'\n    - '.join(self.categories)}
-tags:
-    - {'\n    - '.join(self.tags)}
-draft: {str(self.draft).lower()}
----
+        frontmatter = f"""+++
+title = "{self.title}"
+date = {datetime.now().isoformat()}
+description = {self.description}
+image = images/{os.path.basename(self.image.name)}
+caption = {self.caption or ''}
+categories = [{','.join(self.categories)}]
+tags = [{','.join(self.tags)}]
+draft = {str(self.draft).lower()}
++++
 """
 
         # Combine frontmatter and markdown content
         full_markdown = frontmatter + markdown_content
 
         # Save markdown file
-        markdown_file_path = os.path.join(year_folder, f"{self.slug}.md")
+        markdown_file_path = os.path.join(folder, f"{self.slug}.md")
         with open(markdown_file_path, 'w', encoding='utf-8') as markdown_file:
             markdown_file.write(full_markdown)
 
     def delete(self, *args, **kwargs):
         # Delete the markdown file
-        markdown_file_path = os.path.join('content', 'posts', str(datetime.now().year), f"{self.slug}.md")
+        markdown_file_path = os.path.join('exampleSite', 'content', 'en','example1', f"{self.slug}.md")
         if os.path.exists(markdown_file_path):
             os.remove(markdown_file_path)
 
