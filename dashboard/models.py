@@ -5,6 +5,8 @@ from .helpers import generate_slug
 from datetime import datetime
 import os
 import html2text
+import subprocess
+
 
 
 class Profile(models.Model):
@@ -77,6 +79,14 @@ draft = {str(self.draft).lower()}
         markdown_file_path = os.path.join(folder, f"{self.slug}.md")
         with open(markdown_file_path, 'w', encoding='utf-8') as markdown_file:
             markdown_file.write(full_markdown)
+        
+        try:
+            repo_path = os.path.abspath('exampleSite')  # Adjust if your repo root is different
+            subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
+            subprocess.run(['git', 'commit', '-m', f'Add blog: {self.title}'], cwd=repo_path, check=True)
+            subprocess.run(['git', 'push'], cwd=repo_path, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Git push failed: {e}")
 
     def delete(self, *args, **kwargs):
         # Delete the markdown file
