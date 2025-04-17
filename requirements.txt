@@ -1,3 +1,4 @@
 django-ckeditor
 html2text
 subprocess
+django  
