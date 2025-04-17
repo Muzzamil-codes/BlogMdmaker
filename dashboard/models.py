@@ -20,7 +20,7 @@ class BlogModel(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True)
     description = models.TextField(default="No Description")
-    image = models.ImageField(upload_to='exampleSite/static/example')
+    image = models.ImageField(upload_to='hugo-blog/themes/Niello/exampleSite/static/example')
     caption = models.CharField(max_length=255, blank=True, null=True)
     categories = models.JSONField(default=list)  # For simplicity, storing as JSON
     tags = models.JSONField(default=list)
@@ -36,20 +36,20 @@ class BlogModel(models.Model):
             print(self.file_directory)
             os.remove(self.file_directory.strip())
             self.slug = generate_slug(self.title)
-            self.file_directory = os.path.join('exampleSite', 'content', 'en','example1')
+            self.file_directory = os.path.join('hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1')
             super().save(*args, **kwargs)
             self.save_markdown()
         else:
             
             self.slug = generate_slug(self.title)
-            self.file_directory = os.path.join('exampleSite', 'content', 'en','example1')
+            self.file_directory = os.path.join('hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1')
             
             super().save(*args, **kwargs)
             self.save_markdown()
 
     def save_markdown(self):
         # Get the year folder path
-        folder = os.path.join('exampleSite', 'content', 'en','example1')
+        folder = os.path.join('hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1')
 
         # Convert content to markdown
         converter = html2text.HTML2Text()
@@ -81,7 +81,7 @@ draft = {str(self.draft).lower()}
             markdown_file.write(full_markdown)
         
         try:
-            repo_path = os.path.abspath('exampleSite')  # Adjust if your repo root is different
+            repo_path = os.path.abspath('hugo-blog')  # Adjust if your repo root is different
             subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
             subprocess.run(['git', 'commit', '-m', f'Add blog: {self.title}'], cwd=repo_path, check=True)
             subprocess.run(['git', 'push'], cwd=repo_path, check=True)
@@ -90,7 +90,7 @@ draft = {str(self.draft).lower()}
 
     def delete(self, *args, **kwargs):
         # Delete the markdown file
-        markdown_file_path = os.path.join('exampleSite', 'content', 'en','example1', f"{self.slug}.md")
+        markdown_file_path = os.path.join('hugo-blog', 'themes', 'Niello', 'exampleSite', 'content', 'en','example1', f"{self.slug}.md")
         if os.path.exists(markdown_file_path):
             os.remove(markdown_file_path)
 
