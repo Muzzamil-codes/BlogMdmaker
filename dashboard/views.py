@@ -75,7 +75,7 @@ def add_blog(request):
         #     return redirect('add_blog')
 
         BlogModel.objects.create(
-            user=user, title=title, description=description, image=image, caption=caption, categories=categories, tags=tags, draft=draft, content=content
+            user=user, title=title, description=description, image=image, categories=categories, tags=tags, draft=draft, content=content
         )
         messages.success(request, "Blog has been saved!")
         return redirect('/')
@@ -120,10 +120,10 @@ def update_blog(request, slug):
                 # if blog.image and os.path.exists(self.image.path):
                 os.remove(blog_obj.image.path)
 
-                blog_obj.title, blog_obj.description, blog_obj.image, blog_obj.caption, blog_obj.categories, blog_obj.tags, blog_obj.draft, blog_obj.content = title, description, image, caption, categories, tags, draft,content
+                blog_obj.title, blog_obj.description, blog_obj.image, blog_obj.categories, blog_obj.tags, blog_obj.draft, blog_obj.content = title, description, image, categories, tags, draft,content
                 blog_obj.save()
                 
-            blog_obj.title, blog_obj.description, blog_obj.caption, blog_obj.categories, blog_obj.tags, blog_obj.draft, blog_obj.content = title, description, caption, categories, tags, draft, content
+            blog_obj.title, blog_obj.description, blog_obj.categories, blog_obj.tags, blog_obj.draft, blog_obj.content = title, description, categories, tags, draft, content
             blog_obj.save()
 
             messages.success(request, "Blog has been updated!")
