@@ -1,4 +1,5 @@
 django-ckeditor
 html2text
-subprocess
-django  
+django
+djangorestframework
+Pillow

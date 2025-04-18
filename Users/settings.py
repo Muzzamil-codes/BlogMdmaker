@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-b!vssebr#ky28wre57n*=()*=id)y^8*+7k6e5nfbm*l(9t!+$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -128,7 +128,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ADDED MANUALLY
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "exampleSite"),
+    os.path.join(BASE_DIR, 'hugo-blog', 'themes', 'Niello', 'exampleSite', 'static', 'example'),
+    os.path.join(BASE_DIR, 'hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en', 'example1'),
 ]
 
