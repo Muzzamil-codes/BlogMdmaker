@@ -22,7 +22,8 @@
             {% for blog in blog_objs %}
             <div class="post-box {{blog.genre}}">
                 {% load static %}
-                <img src="{% static blog.image.url %}" alt="" class="post-image">
+                <img src="{% static blog.image.name %}" alt="" class="post-image">
+                {% comment %} <img src="/static/{{ blog.image.name }}" alt="" class="post-image"> {% endcomment %}
                 {% if blog.draft %}
                     <br>
                     <h2 class="category"><strong>DRAFT</strong></h2>

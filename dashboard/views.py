@@ -17,7 +17,8 @@ def userpanel(request):
         try:
             blog_objs = BlogModel.objects.filter(user=request.user)
             for obj in blog_objs:
-                obj.image.name = obj.image.name[12:]
+                obj.image.name = obj.image.name.split('example/')[-1]
+                obj.image.name = 'example/' + obj.image.name
                 print(obj.image.name)
             context['blog_objs'] = blog_objs
         except Exception as e:

@@ -62,10 +62,10 @@ class BlogModel(models.Model):
         frontmatter = f"""+++
 title = "{self.title.replace('"', '\\"')}"
 date = {datetime.now().isoformat()}
-description = "{self.description.replace("\\n", '\\')}"
+description = "{self.description.replace('\n', ' ')}"
 image = images/{os.path.basename(self.image.name)}
-categories = [{','.join(self.categories)}]
-tags = [{','.join(self.tags)}]
+categories = [{', '.join(f'"{cat}"' for cat in self.categories)}]
+tags = [{', '.join(f'"{tag}"' for tag in self.tags)}]
 draft = {str(self.draft).lower()}
 +++
 """
