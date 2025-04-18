@@ -21,7 +21,6 @@ class BlogModel(models.Model):
     slug = models.SlugField(unique=True, null=True)
     description = models.TextField(default="No Description")
     image = models.ImageField(upload_to='hugo-blog/themes/Niello/exampleSite/static/example')
-    caption = models.CharField(max_length=255, blank=True, null=True)
     categories = models.JSONField(default=list)  # For simplicity, storing as JSON
     tags = models.JSONField(default=list)
     draft = models.BooleanField(default=False)
@@ -61,11 +60,10 @@ class BlogModel(models.Model):
 
         # Build the markdown frontmatter
         frontmatter = f"""+++
-title = "{self.title}"
+title = "{self.title.replace('"', '\\"')}"
 date = {datetime.now().isoformat()}
-description = \"""{self.description}\"""
+description = "{self.description.replace("\\n", '\\')}"
 image = images/{os.path.basename(self.image.name)}
-caption = {self.caption or ''}
 categories = [{','.join(self.categories)}]
 tags = [{','.join(self.tags)}]
 draft = {str(self.draft).lower()}
@@ -93,6 +91,13 @@ draft = {str(self.draft).lower()}
         markdown_file_path = os.path.join('hugo-blog', 'themes', 'Niello', 'exampleSite', 'content', 'en','example1', f"{self.slug}.md")
         if os.path.exists(markdown_file_path):
             os.remove(markdown_file_path)
+            try:
+                repo_path = os.path.abspath('hugo-blog')  # Adjust if your repo root is different
+                subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
+                subprocess.run(['git', 'commit', '-m', f'Add blog: {self.title}'], cwd=repo_path, check=True)
+                subprocess.run(['git', 'push'], cwd=repo_path, check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Git push failed: {e}")
 
         # Delete the image file
         if self.image and os.path.exists(self.image.path):

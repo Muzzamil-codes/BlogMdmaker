@@ -58,7 +58,6 @@ def add_blog(request):
         title = request.POST.get('title')
         description = request.POST.get("description")
         image = request.FILES.get('image', '')
-        caption = request.POST.get("caption")
         
         categories = request.POST.get('categories')
         categories = categories.split(',') if categories else []
@@ -102,7 +101,6 @@ def update_blog(request, slug):
             print(request.FILES)
             title = request.POST.get('title')
             description = request.POST.get("description")
-            caption = request.POST.get("caption")
             
             categories = request.POST.get('categories')
             categories = categories.split(',') if categories else []
