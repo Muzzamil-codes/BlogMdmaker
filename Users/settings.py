@@ -128,7 +128,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ADDED MANUALLY
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'hugo-blog', 'themes', 'Niello', 'exampleSite', 'static', 'example'),
-    os.path.join(BASE_DIR, 'hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en', 'example1'),
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1'),
 ]
 
