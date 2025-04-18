@@ -63,7 +63,7 @@ class BlogModel(models.Model):
         frontmatter = f"""+++
 title = "{self.title}"
 date = {datetime.now().isoformat()}
-description = {self.description}
+description = \"""{self.description}\"""
 image = images/{os.path.basename(self.image.name)}
 caption = {self.caption or ''}
 categories = [{','.join(self.categories)}]
