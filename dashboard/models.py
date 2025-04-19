@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import html2text
 import subprocess
-
+import base64
 
 
 class Profile(models.Model):
@@ -58,6 +58,10 @@ class BlogModel(models.Model):
         markdown_content = converter.handle(self.content)
         markdown_content = markdown_content.replace('src="', 'src="/images/')
 
+        with open(os.path.basename(self.image.name), "rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode('utf-8')
+            data_url = f"data:image/png;base64,{encoded}"
+
         # Build the markdown frontmatter
         frontmatter = f"""+++
 title = "{self.title.replace('"', '\\"')}"
@@ -67,6 +71,8 @@ categories = [{', '.join(f'"{cat}"' for cat in self.categories)}]
 tags = [{', '.join(f'"{tag}"' for tag in self.tags)}]
 draft = {str(self.draft).lower()}
 +++
+![]({data_url})
+
 """
 
         # Combine frontmatter and markdown content
