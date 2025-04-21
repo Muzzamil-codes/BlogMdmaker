@@ -90,7 +90,8 @@ def update_blog(request, slug):
     try:
 
         blog_obj = BlogModel.objects.get(slug=slug)
-        blog_image = blog_obj.image.name[8:]
+        blog_image = blog_obj.image.name.split('example/')[-1]
+        blog_image = 'example/' + blog_image
 
         if blog_obj.user != request.user:
             return redirect('/')

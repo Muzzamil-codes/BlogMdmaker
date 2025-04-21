@@ -133,3 +133,4 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1'),
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

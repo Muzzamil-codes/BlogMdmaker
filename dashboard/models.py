@@ -20,7 +20,7 @@ class BlogModel(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, null=True)
     description = models.TextField(default="No Description")
-    image = models.ImageField(upload_to='hugo-blog/themes/Niello/exampleSite/static/example')
+    image = models.ImageField(upload_to='staticfiles/example')
     categories = models.JSONField(default=list)  # For simplicity, storing as JSON
     tags = models.JSONField(default=list)
     draft = models.BooleanField(default=False)
@@ -31,24 +31,27 @@ class BlogModel(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if self.file_directory:
-            print(self.file_directory)
-            os.remove(self.file_directory.strip())
+        # Generate slug only if not already set
+        if not self.slug:
             self.slug = generate_slug(self.title)
-            self.file_directory = os.path.join('hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1')
-            super().save(*args, **kwargs)
-            self.save_markdown()
-        else:
-            
-            self.slug = generate_slug(self.title)
-            self.file_directory = os.path.join('hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1')
-            
-            super().save(*args, **kwargs)
-            self.save_markdown()
+
+        # Set file directory if not already set
+        if not self.file_directory:
+            self.file_directory = os.path.join(
+                'hugo-blog', 'themes', 'Niello', 'exampleSite', 'content', 'en', 'example1'
+            )
+
+        # Remove old markdown file if it exists (updating post)
+        markdown_file_path = os.path.join(self.file_directory, f"{self.slug}.md")
+        if os.path.exists(markdown_file_path):
+            os.remove(markdown_file_path)
+
+        super().save(*args, **kwargs)
+        self.save_markdown()
+
 
     def save_markdown(self):
-        # Get the year folder path
-        folder = os.path.join('hugo-blog', 'themes', 'Niello','exampleSite', 'content', 'en','example1')
+        folder = self.file_directory
 
         # Convert content to markdown
         converter = html2text.HTML2Text()
@@ -56,13 +59,17 @@ class BlogModel(models.Model):
         converter.images_as_html = False
 
         markdown_content = converter.handle(self.content)
-        markdown_content = markdown_content.replace('src="', 'src="/images/')
 
-        with open(os.path.basename(self.image.name), "rb") as image_file:
-            encoded = base64.b64encode(image_file.read()).decode('utf-8')
-            data_url = f"data:image/png;base64,{encoded}"
+        # Embed the image as base64
+        try:
+            with open(self.image.path, "rb") as image_file:
+                encoded = base64.b64encode(image_file.read()).decode('utf-8')
+                data_url = f"data:image/png;base64,{encoded}"
+        except Exception as e:
+            print(f"Error reading image: {e}")
+            data_url = ""
 
-        # Build the markdown frontmatter
+        # Build frontmatter
         frontmatter = f"""+++
 title = "{self.title.replace('"', '\\"')}"
 date = {datetime.now().isoformat()}
@@ -71,25 +78,33 @@ categories = [{', '.join(f'"{cat}"' for cat in self.categories)}]
 tags = [{', '.join(f'"{tag}"' for tag in self.tags)}]
 draft = {str(self.draft).lower()}
 +++
-![]({data_url})
-
 """
 
-        # Combine frontmatter and markdown content
+        # Add image preview if available
+        if data_url:
+            frontmatter += f"![]({data_url})\n\n"
+
+        # Combine everything
         full_markdown = frontmatter + markdown_content
 
         # Save markdown file
         markdown_file_path = os.path.join(folder, f"{self.slug}.md")
-        with open(markdown_file_path, 'w', encoding='utf-8') as markdown_file:
-            markdown_file.write(full_markdown)
-        
         try:
-            repo_path = os.path.abspath('hugo-blog')  # Adjust if your repo root is different
+            with open(markdown_file_path, 'w', encoding='utf-8') as markdown_file:
+                markdown_file.write(full_markdown)
+        except Exception as e:
+            print(f"Error writing markdown file: {e}")
+            return
+
+        # Git commit and push
+        try:
+            repo_path = os.path.abspath('hugo-blog')
             subprocess.run(['git', 'add', '.'], cwd=repo_path, check=True)
             subprocess.run(['git', 'commit', '-m', f'Add blog: {self.title}'], cwd=repo_path, check=True)
             subprocess.run(['git', 'push'], cwd=repo_path, check=True)
         except subprocess.CalledProcessError as e:
             print(f"Git push failed: {e}")
+
 
     def delete(self, *args, **kwargs):
         # Delete the markdown file
